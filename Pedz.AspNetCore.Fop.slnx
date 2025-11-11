@@ -1,0 +1,19 @@
+<Solution>
+  <Folder Name="/examples/">
+    <Project Path="examples/WebApiExample/WebApiExample.csproj" Id="af466570-dd7c-4261-a137-f56337ad5fc1" />
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".gitignore" />
+    <File Path="readme.md" />
+  </Folder>
+  <Folder Name="/Solution Items/images/">
+    <File Path="images/package-image.png" />
+  </Folder>
+  <Folder Name="/sources/">
+    <Project Path="sources/Pedz.AspNetCore.Fop.MinimalApi/Pedz.AspNetCore.Fop.MinimalApi.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests.csproj" Id="3bdb2cda-5d2a-4d18-ae51-65f14ca6f2a6" />
+    <Project Path="tests/TestGenerator/tests.csproj" />
+  </Folder>
+</Solution>

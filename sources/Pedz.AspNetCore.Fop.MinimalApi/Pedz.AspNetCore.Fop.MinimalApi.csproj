@@ -1,0 +1,51 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<PackageId>Pedz.AspNetCore.Fop.MinimalApi</PackageId>
+		<PackageVersion>0.0.1</PackageVersion>
+		<Authors>Pedro De Rycker</Authors>
+		<Title>Filtering, Ordering, Pagination for ASP.NET Core minimal apis</Title>
+		<Description>Build-time Filtering, Ordering, Pagination for ASP.NET Core minimal apis</Description>
+		<Copyright>2025</Copyright>
+		<PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/pedro-de-rycker/Pedz.AspNetCore.Fop</RepositoryUrl>
+		<PackageTags>filtering;ordering;sorting;paging;pagination;offset</PackageTags>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+		<IsPackable>true</IsPackable>
+		<PackageIconUrl>https://raw.githubusercontent.com/pedro-de-rycker/Pedz.AspNetCore.Fop/refs/heads/main/images/package-image.png</PackageIconUrl>
+		
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<EnforceExtendedAnalyzerRules>false</EnforceExtendedAnalyzerRules>
+		<UserSecretsId>0b455ef2-f89f-4d1f-95bf-86b0704be19d</UserSecretsId>
+		<PackageProjectUrl>https://github.com/pedro-de-rycker/Pedz.AspNetCore.Fop</PackageProjectUrl>
+		<PackageIcon>package-image.png</PackageIcon>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Bcl.HashCode" Version="6.0.0" />
+		<PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" />
+		<PackageReference Include="PolySharp" Version="1.15.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="RhoMicro.CodeAnalysis.Lyra" Version="1.1.0">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="../../readme.md" Pack="true" PackagePath="/" CopyToOutputDirectory="Always" />
+		<None Include="..\..\images\package-image.png">
+		  <Pack>True</Pack>
+		  <PackagePath>\</PackagePath>
+		</None>
+	</ItemGroup>
+
+</Project>

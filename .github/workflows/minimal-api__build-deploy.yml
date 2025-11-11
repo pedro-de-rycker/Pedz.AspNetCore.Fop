@@ -1,0 +1,46 @@
+# This workflow will build a .NET project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
+
+name: .NET
+
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        default: '1.0.0'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    uses: ./.github/workflows/minimal-api__build.yml
+
+  deploy:
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    environment: release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+        dotnet-quality: 'preview'
+    - name: Build
+      run: dotnet build --configuration Release
+    - name: Pack
+      run: dotnet pack ${{ github.workspace }}/sources/Pedz.AspNetCore.Fop.MinimalApi/Pedz.AspNetCore.Fop.MinimalApi.csproj --configuration Release /p:Version=${{github.ref_name}}.${{ github.run_attempt }} --no-build --output ${{ github.workspace }}/releases
+    - name: NuGet login (OIDC → temp API key)
+      uses: NuGet/login@v1
+      id: login
+      with:
+        user: ${{ secrets.NUGET_USER }}
+    - name: Push
+      run: dotnet nuget push ${{ github.workspace }}/releases/Pedz.AspNetCore.Fop.MinimalApi.${{github.ref_name}}.${{ github.run_attempt }}.nupkg --source https://www.nuget.org/api/v2/package --api-key ${{steps.login.outputs.NUGET_API_KEY}}

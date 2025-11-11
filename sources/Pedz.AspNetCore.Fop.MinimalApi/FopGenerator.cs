@@ -1,0 +1,370 @@
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Pedz.AspNetCore.Fop.MinimalApi.Models;
+using Pedz.AspNetCore.Fop.MinimalApi.Templates.OffsetPagingData;
+using RhoMicro.CodeAnalysis.Lyra;
+
+namespace Pedz.AspNetCore.Fop.MinimalApi;
+
+[Generator(LanguageNames.CSharp)]
+public class FopGenerator : IIncrementalGenerator
+{
+    public void Initialize(
+        IncrementalGeneratorInitializationContext context)
+    {
+        //Attributes
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "IPaginatedFopAttribute.g.cs",
+                """
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes.Abstractions;
+
+                public interface IFopAttribute
+                {
+                    public int MaxSize { get; set; }
+
+                    public string PropertiesParameterPrefixName { get; set; }
+                
+                    public string SortParameterPrefixName { get; set; }
+                }                
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "OffsetFopAttribute.g.cs",
+                """
+                #nullable enable
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes;
+
+                [global::System.AttributeUsage(global::System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+                public sealed class OffsetFopAttribute
+                    : global::System.Attribute, global::Pedz.AspNetCore.Fop.MinimalApi.Attributes.Abstractions.IFopAttribute
+                {
+                    public int MaxSize { get; set; } = 500;
+
+                    /// <inheritdoc />
+                    public string? PropertiesParameterPrefixName { get; set; }
+
+                    /// <inheritdoc />
+                    public string? OffsetParameterPrefixName { get; set; }
+
+                    /// <inheritdoc />
+                    public string? SortParameterPrefixName { get; set; }
+                }
+                #nullable disable
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "KeysetFopAttribute.g.cs",
+                """
+                #nullable enable
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes;
+
+                [global::System.AttributeUsage(global::System.AttributeTargets.Class, Inherited = true, AllowMultiple = false)]
+                public sealed class KeysetFopAttribute
+                    : global::System.Attribute, global::Pedz.AspNetCore.Fop.MinimalApi.Attributes.Abstractions.IFopAttribute
+                {
+                    public int MaxSize { get; set; } = 500;
+
+                    /// <inheritdoc />
+                    public string? PropertiesParameterPrefixName { get; set; }
+                
+                    /// <inheritdoc />
+                    public string? SortParameterPrefixName { get; set; }
+                
+                    /// <inheritdoc />
+                    public string? KeyPaginationParameterName { get; set; }
+                }
+                #nullable disable
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "FopPropertyAttribute.g.cs",
+                """
+                #nullable enable
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes;
+
+                [global::System.AttributeUsage(global::System.AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
+                public sealed class FopPropertyAttribute
+                    : global::System.Attribute
+                {
+                    /// <summary>
+                    /// Is the property sortable ?
+                    /// </summary>
+                    public bool IsSortable { get; set; } = true;
+
+                    /// <summary>
+                    /// Is the property filterable ?
+                    /// </summary>
+                    public bool IsFilterable { get; set; } = true;
+
+                    /// <summary>
+                    /// The name of the property for the system to use in the called query.
+                    /// Usefull if you want the property to reflect your DTOs name.
+                    /// <remarks>If null, it will take the propety name.</remarks>
+                    /// </summary>
+                    public string? PropertyName { get; set; } = null;
+                }
+                #nullable disable
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "FilteringOrderingData.g.cs",
+                """
+                #nullable enable
+                using System.Linq;
+
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Abstractions;
+
+                public abstract class FilteringOrderingData<TEntity>
+                {
+                    public string? SortBy { get; set; }
+
+                    public required List<(string name, string value, global::Pedz.AspNetCore.Fop.MinimalApi.Enums.FilteringTypeEnum filteringType)> FilterBy { get; set; }
+
+                    public global::Pedz.AspNetCore.Fop.MinimalApi.Enums.SortDirectionEnum SortDirection { get; set; }
+
+                    public abstract global::System.Linq.IQueryable<TEntity> Sort(
+                        string name,
+                        global::System.Linq.IQueryable<TEntity> query);
+
+                    public abstract global::System.Linq.IQueryable<TEntity> Filter(
+                        global::System.Linq.IQueryable<TEntity> query);
+                }
+                #nullable disable
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "KeySetPagingData.g.cs",
+                """
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes;
+
+                public abstract class KeySetPagingData<TEntity, TKey>
+                    : global::Pedz.AspNetCore.Fop.MinimalApi.Abstractions.FilteringOrderingData<TEntity>
+                {
+                    public TKey Key { get; set; }
+                }
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "OffsetPagingData.g.cs",
+                """
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Attributes;
+
+                public abstract class OffsetPagingData<TEntity> 
+                    : global::Pedz.AspNetCore.Fop.MinimalApi.Abstractions.FilteringOrderingData<TEntity>
+                {
+                    public int Offset { get; set; }
+                    
+                    public int Size { get; set; }
+
+                    public abstract global::System.Linq.IQueryable<TEntity> Retreive(
+                        global::System.Linq.IQueryable<TEntity> query);
+                }
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "SortDirectionEnum.g.cs",
+                """
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Enums;
+
+                public enum SortDirectionEnum
+                {
+                    Ascending,
+                    Descending
+                }
+
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "FilteringTypeEnum.g.cs",
+                """
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Enums;
+
+                public enum FilteringTypeEnum
+                {
+                    Equal,
+                    NotEqual,
+                    Inferior,
+                    InferiorOrEqual,
+                    Superior,
+                    SuperiorOrEqual
+                }
+
+                """));
+
+        context.RegisterPostInitializationOutput(x =>
+            x.AddSource(
+                "IQuerybleExtensions.g.cs",
+                """
+                #nullable enable
+                using System;
+                using System.Linq;
+                using Pedz.AspNetCore.Fop.MinimalApi.Abstractions;
+
+                namespace Pedz.AspNetCore.Fop.MinimalApi.Extensions;
+
+                public static class IQuerybleExtensions
+                {
+                    public static global::System.Linq.IQueryable<TEntity> ApplyFop<TEntity>(
+                        this global::System.Linq.IQueryable<TEntity> query,
+                        global::Pedz.AspNetCore.Fop.MinimalApi.Attributes.OffsetPagingData<TEntity> offsetPagingData,
+                        Func<global::System.Linq.IQueryable<TEntity>, global::System.Linq.IQueryable<TEntity>>? defaultSort = null)
+                    {
+                        if (offsetPagingData.SortBy is not null)
+                            query = offsetPagingData.Sort(offsetPagingData.SortBy, query);
+
+                        if (offsetPagingData.FilterBy is not null or [])
+                            query = offsetPagingData.Filter(
+                                query);
+
+                        if (offsetPagingData.SortBy is null && defaultSort is not null)
+                            query = defaultSort(query);
+
+                        query = offsetPagingData.Retreive(query);
+
+                        return query;
+                    }
+                }
+                #nullable disable
+                """));
+
+        var pipeline = context.SyntaxProvider.ForAttributeWithMetadataName(
+            "Pedz.AspNetCore.Fop.MinimalApi.Attributes.OffsetFopAttribute",
+            static (node, ct) =>
+                node is ClassDeclarationSyntax @class,
+            static (context, ct) =>
+            {
+                ct.ThrowIfCancellationRequested();
+                if (context.TargetSymbol is INamedTypeSymbol target)
+                {
+                    var className = target.Name;
+                    var @namespace = target.ContainingNamespace
+                        .ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat)
+                    ["global::".Length..];
+                    List<(string name, string definedName)>? sortableProperties = null;
+                    List<(string name, string definedName, ITypeSymbol type)>? filterableProperties = null;
+
+                    var propertiesWithFopPropertyAttribute = GetFopProperties(target);
+
+                    foreach (var property in propertiesWithFopPropertyAttribute)
+                    {
+                        var attribute = property.GetAttributes().Where(attr => attr.AttributeClass?.Name == "FopPropertyAttribute").SingleOrDefault();
+                        var propertyNameArg = attribute.NamedArguments
+                            .FirstOrDefault(kv => kv.Key == "PropertyName");
+
+                        var definedPropertyName = property.Name;
+
+                        if (propertyNameArg.Value.Value is string parsedPropertyName
+                            && !string.IsNullOrWhiteSpace(parsedPropertyName))
+                            definedPropertyName = parsedPropertyName;
+
+                        var namedArg = attribute.NamedArguments
+                            .FirstOrDefault(kv => kv.Key == "IsSortable");
+
+                        if (namedArg.Value.Value is bool sortable && sortable)
+                        {
+                            sortableProperties ??= [];
+                            sortableProperties.Add((property.Name, definedPropertyName));
+                        }
+
+                        namedArg = attribute.NamedArguments
+                            .FirstOrDefault(kv => kv.Key == "IsFilterable");
+
+                        if (namedArg.Value.Value is bool filterable && filterable)
+                        {
+                            filterableProperties ??= [];
+                            filterableProperties.Add((property.Name, definedPropertyName, property.Type));
+                        }
+                    }
+
+                    var maxPageSizeAttribute = context.Attributes
+                        .First().NamedArguments
+                        .Where(x => x.Key == "MaxSize")
+                        .FirstOrDefault();
+
+                    var filterPropertiesNamesAttribute = context.Attributes
+                        .First().NamedArguments
+                        .Where(x => x.Key == "PropertiesParameterPrefixName")
+                        .FirstOrDefault();
+
+                    var offsetPropertiesNamesAttribute = context.Attributes
+                        .First().NamedArguments
+                        .Where(x => x.Key == "OffsetParameterPrefixName")
+                        .FirstOrDefault();
+
+                    var sortPropertiesNamesAttribute = context.Attributes
+                        .First().NamedArguments
+                        .Where(x => x.Key == "SortParameterPrefixName")
+                        .FirstOrDefault();
+
+                    int maxPageSize = 500;
+
+                    if (maxPageSizeAttribute.Value.Value is int parsedMaxPageSize)
+                        maxPageSize = parsedMaxPageSize;
+
+                    return new MainModel
+                    {
+                        Namespace = @namespace,
+                        ClassName = className,
+                        OffsetQueryName = offsetPropertiesNamesAttribute.Value.Value as string ?? "offset",
+                        SortQueryName = sortPropertiesNamesAttribute.Value.Value as string ?? "sort-by",
+                        SortableProperties = sortableProperties,
+                        FilterQueryPrefixName = filterPropertiesNamesAttribute.Value.Value as string ?? "properties",
+                        FilterableProperties = filterableProperties,
+                        MaxSize = maxPageSize
+                    };
+                }
+
+                return default;
+            })
+            .Where(x => x is not null)
+            .Select(static (x, ct) =>
+            {
+                if (x is null)
+                    throw new ArgumentNullException(nameof(x));
+
+                ct.ThrowIfCancellationRequested();
+                using var sb = new CSharpSourceBuilder(new CSharpSourceBuilderOptions
+                {
+                    Prelude = (builder, ct) =>
+                    {
+                        builder.AppendLine("""
+                            // <auto-generated>
+                            // My prelude
+                            // </auto-generated>
+
+                            #nullable enable
+                            """);
+
+                    }
+                });
+                sb.Append(new OffsetPagingDataComponent(x!));
+
+                return ($"{x.Namespace}.{x.ClassName}.g.cs", sb.ToString());
+            });
+
+        context.RegisterSourceOutput(pipeline, (context, tuple) =>
+        {
+            context.AddSource(tuple.Item1, tuple.Item2);
+        });
+    }
+
+    private static IEnumerable<IPropertySymbol> GetFopProperties(INamedTypeSymbol target)
+    {
+        var result = target.GetMembers()
+            .OfType<IPropertySymbol>()
+            .Where(prop => prop.GetAttributes()
+                .Any(attr => attr.AttributeClass?.Name == "FopPropertyAttribute"))
+            .ToList();
+
+        return result;
+    }
+}
