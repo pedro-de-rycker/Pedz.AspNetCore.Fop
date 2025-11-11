@@ -2,7 +2,6 @@
 
 	<PropertyGroup>
 		<PackageId>Pedz.AspNetCore.Fop.MinimalApi</PackageId>
-		<PackageVersion>0.0.1</PackageVersion>
 		<Authors>Pedro De Rycker</Authors>
 		<Title>Filtering, Ordering, Pagination for ASP.NET Core minimal apis</Title>
 		<Description>Build-time Filtering, Ordering, Pagination for ASP.NET Core minimal apis</Description>
