@@ -1,0 +1,77 @@
+﻿using Microsoft.AspNetCore.Http;
+using Pedz.AspNetCore.Fop.MinimalApi.Enums;
+using Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests.Entities;
+using System.Reflection;
+
+namespace Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests;
+
+internal class ParsingOffsetTests
+{
+    [Test]
+    public async Task TestDataObjectInstanciation()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+
+        // Act
+        var dataObject =
+            await OffsetEntityOffsetPagingData.BindAsync(context, default!);
+
+        // Assert
+        await Assert.That(dataObject).IsNotNull();
+    }
+
+    [Test]
+    public async Task TestDataObjectOffset()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        context.Request.QueryString = new QueryString("?offset[250]=500");
+
+        // Act
+        var dataObject =
+            await OffsetEntityOffsetPagingData.BindAsync(context, default!);
+
+        // Assert
+        await Assert.That(dataObject).IsNotNull();
+        await Assert.That(dataObject.Offset).IsEqualTo(500);
+        await Assert.That(dataObject.Size).IsEqualTo(250);
+    }
+
+    [Test]
+    public async Task TestDataObjectSortable()
+    {
+        // Arrange
+        var context = new DefaultHttpContext();
+        context.Request.QueryString = new QueryString("?sort-by=asc:Id");
+
+        // Act
+        var dataObject =
+            await OffsetEntityOffsetPagingData.BindAsync(context, default!);
+
+        // Assert
+        await Assert.That(dataObject).IsNotNull();
+        await Assert.That(dataObject.SortBy).IsEqualTo("Id");
+        await Assert.That(dataObject.SortDirection).IsEqualTo(Enums.SortDirectionEnum.Ascending);
+    }
+
+    [Test]
+    public async Task TestDataObjectFiltering()
+    {
+        // Arrange
+        string value = "test";
+        var context = new DefaultHttpContext();
+        context.Request.QueryString = new QueryString($"?properties.{nameof(OffsetEntity.NullableStringProperty)}=eq:{value}");
+
+        // Act
+        var dataObject =
+            await OffsetEntityOffsetPagingData.BindAsync(context, default!);
+
+        // Assert
+        await Assert.That(dataObject).IsNotNull();
+        await Assert.That(dataObject.FilterBy.Count).IsEqualTo(1);
+        await Assert.That(dataObject.FilterBy.First().name).IsEqualTo(nameof(OffsetEntity.NullableStringProperty));
+        await Assert.That(dataObject.FilterBy.First().value).IsEqualTo(value);
+        await Assert.That(dataObject.FilterBy.First().filteringType).IsEqualTo(FilteringTypeEnum.Equal);
+    }
+}
