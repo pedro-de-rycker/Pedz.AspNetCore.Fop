@@ -35,6 +35,7 @@ jobs:
 
   test:
     name: Test on ${{ matrix.os }} - .NET ${{ matrix.dotnet-version }}
+    needs: build
     runs-on: ${{ matrix.os }}
 
     strategy:
