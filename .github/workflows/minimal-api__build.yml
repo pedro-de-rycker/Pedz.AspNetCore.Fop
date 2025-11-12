@@ -40,7 +40,8 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
-        dotnet-version: ['8.0.x', '9.0.x']
+        dotnet-version: ['10.0.x']
+        dotnet-quality: 'preview'
       fail-fast: false  # Continue running other jobs if one fails
 
     steps:
