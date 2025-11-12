@@ -1,10 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Pedz.AspNetCore.Fop.MinimalApi.Enums;
 using Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests.Entities;
 using System.Reflection;
 
 namespace Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests;
 
-internal class OffsetTests
+internal class ParsingOffsetTests
 {
     [Test]
     public async Task TestDataObjectInstanciation()
@@ -52,5 +53,25 @@ internal class OffsetTests
         await Assert.That(dataObject).IsNotNull();
         await Assert.That(dataObject.SortBy).IsEqualTo("Id");
         await Assert.That(dataObject.SortDirection).IsEqualTo(Enums.SortDirectionEnum.Ascending);
+    }
+
+    [Test]
+    public async Task TestDataObjectFiltering()
+    {
+        // Arrange
+        string value = "test";
+        var context = new DefaultHttpContext();
+        context.Request.QueryString = new QueryString($"?properties.{nameof(OffsetEntity.NullableStringProperty)}=eq:{value}");
+
+        // Act
+        var dataObject =
+            await OffsetEntityOffsetPagingData.BindAsync(context, default!);
+
+        // Assert
+        await Assert.That(dataObject).IsNotNull();
+        await Assert.That(dataObject.FilterBy.Count).IsEqualTo(1);
+        await Assert.That(dataObject.FilterBy.First().name).IsEqualTo(nameof(OffsetEntity.NullableStringProperty));
+        await Assert.That(dataObject.FilterBy.First().value).IsEqualTo(value);
+        await Assert.That(dataObject.FilterBy.First().filteringType).IsEqualTo(FilteringTypeEnum.Equal);
     }
 }
