@@ -41,7 +41,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         dotnet-version: ['10.0.x']
-        dotnet-quality: 'preview'
       fail-fast: false  # Continue running other jobs if one fails
 
     steps:
@@ -52,6 +51,7 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-quality: 'preview' # remove when 10 is usable
 
     - name: Restore dependencies
       run: dotnet restore
