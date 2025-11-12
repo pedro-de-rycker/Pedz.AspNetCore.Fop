@@ -63,34 +63,34 @@ jobs:
     - name: Run tests with coverage
       run: dotnet test --configuration Release --no-build --coverage --report-trx --results-directory ./TestResults
 
-    - name: Upload test results
-      if: (!cancelled())  # Run even if tests fail
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results-${{ matrix.os }}-${{ matrix.dotnet-version }}
-        path: ./TestResults/*.trx
+    # - name: Upload test results
+    #   if: (!cancelled())  # Run even if tests fail
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: test-results-${{ matrix.os }}-${{ matrix.dotnet-version }}
+    #     path: ./TestResults/*.trx
 
-    - name: Upload coverage
-      if: (!cancelled())
-      uses: actions/upload-artifact@v4
-      with:
-        name: coverage-${{ matrix.os }}-${{ matrix.dotnet-version }}
-        path: ./TestResults/*.coverage
+    # - name: Upload coverage
+    #   if: (!cancelled())
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: coverage-${{ matrix.os }}-${{ matrix.dotnet-version }}
+    #     path: ./TestResults/*.coverage
 
-  publish-results:
-    name: Publish Test Results
-    needs: test
-    runs-on: ubuntu-latest
-    if: (!cancelled())
+  # publish-results:
+  #   name: Publish Test Results
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   if: (!cancelled())
 
-    steps:
-    - name: Download all test results
-      uses: actions/download-artifact@v4
-      with:
-        pattern: test-results-*
-        path: ./TestResults
+  #   steps:
+  #   - name: Download all test results
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       pattern: test-results-*
+  #       path: ./TestResults
 
-    - name: Publish test results
-      uses: EnricoMi/publish-unit-test-result-action@v2
-      with:
-        files: ./TestResults/**/*.trx
+  #   - name: Publish test results
+  #     uses: EnricoMi/publish-unit-test-result-action@v2
+  #     with:
+  #       files: ./TestResults/**/*.trx
