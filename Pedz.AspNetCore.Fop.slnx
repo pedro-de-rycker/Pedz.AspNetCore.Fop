@@ -14,6 +14,5 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests.csproj" Id="3bdb2cda-5d2a-4d18-ae51-65f14ca6f2a6" />
-    <Project Path="tests/TestGenerator/tests.csproj" />
   </Folder>
 </Solution>

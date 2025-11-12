@@ -10,6 +10,10 @@ on:
     branches: [ "main" ]
   workflow_call:
 
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,5 +28,69 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore --configuration Release
-    # - name: Test
-    #   run: dotnet test --no-build --verbosity normal
+    - name: Test
+      env:
+        TUNIT_GITHUB_REPORTER_STYLE: collapsible
+      run: dotnet test --configuration Release --no-build --coverage --report-trx --results-directory ./TestResults
+
+  test:
+    name: Test on ${{ matrix.os }} - .NET ${{ matrix.dotnet-version }}
+    needs: build
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        dotnet-version: ['10.0.x']
+      fail-fast: false  # Continue running other jobs if one fails
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET ${{ matrix.dotnet-version }}
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ matrix.dotnet-version }}
+        dotnet-quality: 'preview' # remove when 10 is usable
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests with coverage
+      run: dotnet test --configuration Release --no-build --coverage --report-trx --results-directory ./TestResults
+
+    # - name: Upload test results
+    #   if: (!cancelled())  # Run even if tests fail
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: test-results-${{ matrix.os }}-${{ matrix.dotnet-version }}
+    #     path: ./TestResults/*.trx
+
+    # - name: Upload coverage
+    #   if: (!cancelled())
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: coverage-${{ matrix.os }}-${{ matrix.dotnet-version }}
+    #     path: ./TestResults/*.coverage
+
+  # publish-results:
+  #   name: Publish Test Results
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   if: (!cancelled())
+
+  #   steps:
+  #   - name: Download all test results
+  #     uses: actions/download-artifact@v4
+  #     with:
+  #       pattern: test-results-*
+  #       path: ./TestResults
+
+  #   - name: Publish test results
+  #     uses: EnricoMi/publish-unit-test-result-action@v2
+  #     with:
+  #       files: ./TestResults/**/*.trx
