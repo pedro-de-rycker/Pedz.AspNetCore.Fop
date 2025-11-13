@@ -55,7 +55,7 @@ internal class OffsetPagingDataComponent(
                         // Offset
                         const string currentPageKey = "{{m.model.OffsetQueryName}}";
                         var offsetingProperties = context.Request.Query
-                            .Where(q => q.Key.StartsWith(currentPageKey));
+                            .Where(q => q.Key.StartsWith(currentPageKey, global::System.StringComparison.InvariantCultureIgnoreCase));
                         var offsetingProperty = offsetingProperties.FirstOrDefault();
                         var size = {{m.model.MaxSize}};
                         var offsetValue = offsetingProperty.Value.ToString();
@@ -97,7 +97,7 @@ internal class OffsetPagingDataComponent(
                         // Filtering
                         var filteringPrefix = "{{m.model.FilterQueryPrefixName}}.";
                         var filteringProperties = context.Request.Query
-                            .Where(q => q.Key.StartsWith(filteringPrefix));
+                            .Where(q => q.Key.StartsWith(filteringPrefix, global::System.StringComparison.InvariantCultureIgnoreCase));
 
                         global::System.Collections.Generic.List<(string name, string value, global::Pedz.AspNetCore.Fop.MinimalApi.Enums.FilteringTypeEnum filteringType)> filterBy = [];
 
