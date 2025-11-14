@@ -88,7 +88,7 @@ internal class OffsetPagingDataComponent(
                         {
                             var workedSortBy = sortBy.Split(':');
 
-                            if (workedSortBy.Length == 2 && workedSortBy.First() is "desc")
+                            if (workedSortBy.Length == 2 && workedSortBy.First().ToLowerInvariant() is "desc")
                                 sortDirection = global::Pedz.AspNetCore.Fop.MinimalApi.Enums.SortDirectionEnum.Descending;
 
                             sortBy = workedSortBy.Last();
@@ -110,7 +110,7 @@ internal class OffsetPagingDataComponent(
 
                             if (filteringTypeValues.Length >= 2)
                             {
-                                filteringTypeValue = filteringTypeValues.First();
+                                filteringTypeValue = filteringTypeValues.First().ToLowerInvariant();
                                 if (filteringTypeValue is "eq")
                                 {
                                     filteringType = global::Pedz.AspNetCore.Fop.MinimalApi.Enums.FilteringTypeEnum.Equal;

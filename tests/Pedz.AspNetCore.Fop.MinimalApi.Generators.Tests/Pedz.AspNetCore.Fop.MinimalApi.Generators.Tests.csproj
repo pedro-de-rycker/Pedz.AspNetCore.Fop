@@ -13,11 +13,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\sources\Pedz.AspNetCore.Fop.MinimalApi\Pedz.AspNetCore.Fop.MinimalApi.csproj" ReferenceOutputAssembly="false" OutputItemType="analyzer" />
+		<ProjectReference Include="..\..\sources\Pedz.AspNetCore.Fop.MinimalApi\Pedz.AspNetCore.Fop.MinimalApi.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -43,11 +43,18 @@ internal class ParsingOffsetTests
     [Test]
     [MatrixDataSource]
     public async Task TestDataObjectSortable__WithSuccess(
+        [Matrix("asc", "ASC", "desc", "DESC")] string _operator,
         [Matrix("sort-by", "SORT-BY")] string propertyName)
     {
         // Arrange
+        var sortDirection = _operator switch
+        {
+            "asc" or "ASC" => SortDirectionEnum.Ascending,
+            "desc" or "DESC" => SortDirectionEnum.Descending,
+            _ => throw new NotImplementedException()
+        };
         var context = new DefaultHttpContext();
-        context.Request.QueryString = new QueryString($"?{propertyName}=asc:Id");
+        context.Request.QueryString = new QueryString($"?{propertyName}={_operator}:Id");
 
         // Act
         var dataObject =
@@ -56,19 +63,31 @@ internal class ParsingOffsetTests
         // Assert
         await Assert.That(dataObject).IsNotNull();
         await Assert.That(dataObject.SortBy).IsEqualTo("Id");
-        await Assert.That(dataObject.SortDirection).IsEqualTo(Enums.SortDirectionEnum.Ascending);
+        await Assert.That(dataObject.SortDirection).IsEqualTo(sortDirection);
     }
 
     [Test]
     [MatrixDataSource]
     public async Task TestDataObjectFiltering__WithSuccess(
+        [Matrix("eq", "neq", "lt", "lteq", "gt", "gteq", "EQ", "NEQ", "LT", "LTEQ", "GT", "GTEQ")] string _operator,
         [Matrix(["properties", "PROPERTIES"])] string prefix,
         [Matrix(nameof(OffsetEntity.NullableStringProperty), "nullablestringproperty", "NULLABLESTRINGPROPERTY")] string propertyName)
     {
         // Arrange
+        var  filteringType = _operator switch
+        {   
+            "eq" or "EQ" => FilteringTypeEnum.Equal,
+            "neq" or "NEQ" => FilteringTypeEnum.NotEqual,
+            "lt" or "LT" => FilteringTypeEnum.Inferior,
+            "lteq" or "LTEQ" => FilteringTypeEnum.InferiorOrEqual,
+            "gt" or "GT" => FilteringTypeEnum.Superior,
+            "gteq" or "GTEQ" => FilteringTypeEnum.SuperiorOrEqual,
+            _ => throw new NotImplementedException()
+        };
+
         string value = "test";
         var context = new DefaultHttpContext();
-        context.Request.QueryString = new QueryString($"?{prefix}.{propertyName}=eq:{value}");
+        context.Request.QueryString = new QueryString($"?{prefix}.{propertyName}={_operator}:{value}");
 
         // Act
         var dataObject =
@@ -79,6 +98,6 @@ internal class ParsingOffsetTests
         await Assert.That(dataObject.FilterBy.Count).IsEqualTo(1);
         await Assert.That(dataObject.FilterBy.First().name).IsEqualTo(propertyName);
         await Assert.That(dataObject.FilterBy.First().value).IsEqualTo(value);
-        await Assert.That(dataObject.FilterBy.First().filteringType).IsEqualTo(FilteringTypeEnum.Equal);
+        await Assert.That(dataObject.FilterBy.First().filteringType).IsEqualTo(filteringType);
     }
 }
