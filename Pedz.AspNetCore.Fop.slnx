@@ -13,6 +13,7 @@
     <Project Path="sources/Pedz.AspNetCore.Fop.MinimalApi/Pedz.AspNetCore.Fop.MinimalApi.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="tests/Pedz.AspNetCore.Fop.MinimalApi.Generators.Tests/Pedz.AspNetCore.Fop.MinimalApi.Generators.Tests.csproj" Id="d409edfa-c67a-4e62-829c-7fcd57e2aeab" />
     <Project Path="tests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests/Pedz.AspNetCore.Fop.MinimalApi.Generators.UnitTests.csproj" Id="3bdb2cda-5d2a-4d18-ae51-65f14ca6f2a6" />
   </Folder>
 </Solution>
