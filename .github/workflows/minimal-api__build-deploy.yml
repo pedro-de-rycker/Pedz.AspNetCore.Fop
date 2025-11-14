@@ -49,6 +49,8 @@ jobs:
     - name: Push nuget
       run: dotnet nuget push ${{ github.workspace }}/releases/Pedz.AspNetCore.Fop.MinimalApi.${{github.ref_name}}.nupkg --source https://www.nuget.org/api/v2/package --api-key ${{steps.login.outputs.NUGET_API_KEY}}
     - name: Add release assets
-      run: gh release upload "${{ github.ref_name }}" ${{ github.workspace }}/releases/Pedz.AspNetCore.Fop.MinimalApi.${{github.ref_name}}.nupkg
+      uses: softprops/action-gh-release@v2
+      with:
+        files: ${{ github.workspace }}/releases/Pedz.AspNetCore.Fop.MinimalApi.${{github.ref_name}}.nupkg
       env:
         GH_TOKEN: ${{ github.token }}
