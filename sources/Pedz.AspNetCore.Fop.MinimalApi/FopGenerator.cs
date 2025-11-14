@@ -256,7 +256,7 @@ public class FopGenerator : IIncrementalGenerator
                     /// <summary>
                     /// The name of the property for the system to use in the called query.
                     /// Usefull if you want the property to reflect your DTOs name.
-                    /// <remarks>If null, it will take the propety name.</remarks>
+                    /// <remarks>If null, it will take the property name.</remarks>
                     /// </summary>
                     public string? PropertyName { get; set; } = null;
                 }
