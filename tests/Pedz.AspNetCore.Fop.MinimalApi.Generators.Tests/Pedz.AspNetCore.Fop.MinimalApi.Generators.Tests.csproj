@@ -9,7 +9,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Basic.Reference.Assemblies.Net90" Version="1.8.3" />
-		<PackageReference Include="TUnit" Version="1.1.10" />
+		<PackageReference Include="TUnit" Version="1.2.3" />
 	</ItemGroup>
 
 	<ItemGroup>
